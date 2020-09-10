@@ -23,7 +23,7 @@ def derivative(t):
     b = c2 * cos(beta * t)
     c = c3 * sin(beta * t)
     d = c4 * cos(beta * t)
-    return (c + d) * (e ** (alfa * t)) - alfa*(a + b) * (e ** (alfa * t)) 
+    return (c + d) * (e ** (alfa * t)) + alfa*(a + b) * (e ** (alfa * t)) 
 
 def f1(t, u1, z1):
     return z1
