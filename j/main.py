@@ -48,10 +48,10 @@ def calc_ellipse(C):
     a2 = eig[0][1] ** 0.5
     phi1 = eig[1][0][:2]
     phi2 = eig[1][1][:2]
-    print('полуоси')
-    print (a1, a2)
-    print('вектора')
-    print (phi1, phi2)
+    print('Полуоси')
+    print (a1, a2) # 0.006809388648745565 0.3419595454772252
+    print('Собственые вектора')
+    print (phi1, phi2) # [-0.99958621 -0.02876457] [ 0.02876457 -0.99958621]
     alpha = abs(arctan(phi1[1]/phi1[0]))
     t = np.linspace(0., 2 * np.pi, 100)                         # изменение параметра t от 0 до 2pi
     ellipse_matrix = np.array([a1 * np.cos(t), a2 * np.sin(t)]) # параметрическое ур-е эллипса
