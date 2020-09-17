@@ -7,7 +7,7 @@ from euler import euler
 from functions import y, f1, g1, f2, g2, f3, g3, derivative
 from visual import draw_func
 
-def gen_c_matrix(f1, g1, f3, g3, y0, z0, a, b, h):
+def gen_c_matrix(f2, g2, f3, g3, y0, z0, a, b, h):
     n = int((b - a) / h) + 1
     m = 2
     C = [[], []]
@@ -48,7 +48,39 @@ def calc_ellipse(C):
     a2 = eig[0][1] ** 0.5
     phi1 = eig[1][0][:2]
     phi2 = eig[1][1][:2]
+    print('полуоси')
+    print (a1, a2)
+    print('вектора')
+    print (phi1, phi2)
 
+    alpha = abs(arctan(phi1[1]/phi1[0]))
+    t = np.linspace(0., 2 * np.pi, 100)                         # изменение параметра t от 0 до 2pi
+    ellipse_matrix = np.array([a1 * np.cos(t), a2 * np.sin(t)]) # параметрическое ур-е эллипса
+
+    rotate_matrix = np.array([[cos(alpha), sin(alpha)],  # матрица поворота против часовой стрелке
+                              [-sin(alpha), cos(alpha)]])
+
+    inv_matrix = np.array([[-1, 0],                              # матрица инверсии по оси y x
+                          [0, -1]])
+    S = inv_matrix.dot(rotate_matrix)                           # итоговоя матрица перехода к базису
+    ellipse_rotated = np.zeros((2, ellipse_matrix.shape[1]))
+
+    for i in range(ellipse_rotated.shape[1]):                   # поворачиваем эллипс
+        ellipse_rotated[:, i] = np.dot(S, ellipse_matrix[:, i]) 
+
+    return ellipse_rotated
+
+def calc_ellipse_rmnk(P_prev):
+
+    eig = np.linalg.eig(P_prev)
+    a1 = eig[0][0] ** 0.5
+    a2 = eig[0][1] ** 0.5
+    phi1 = eig[1][0][:2]
+    phi2 = eig[1][1][:2]
+    print('полуоси')
+    print (a1, a2)
+    print('вектора')
+    print (phi1, phi2)
     alpha = abs(arctan(phi1[1]/phi1[0]))
     t = np.linspace(0., 2 * np.pi, 100)                         # изменение параметра t от 0 до 2pi
     ellipse_matrix = np.array([a1 * np.cos(t), a2 * np.sin(t)]) # параметрическое ур-е эллипса
@@ -85,6 +117,7 @@ def calc_theta_rls(C, m, n):
         theta_rls_prev = theta_rls
         P_prev = P
 
+    print(P)
     return res
 
 def main():
@@ -94,7 +127,7 @@ def main():
     h = 1
     n = int((b - a) / h) + 1
     y0 = z0 = 0
-    C = gen_c_matrix(f1, g1, f3, g3, y0, z0, a, b, h)
+    C = gen_c_matrix(f2, g2, f3, g3, y0, z0, a, b, h)
     C = C.T
     
     x = np.linspace(a, b, n)
@@ -121,12 +154,20 @@ def main():
 
 
 
-    theta_rls = calc_theta_rls(C, 10, n)
-    x = np.array([i for i in range(10)])
+    theta_rls = calc_theta_rls(C, 1000, n)
+    x = np.array([i for i in range(1000)])
     draw_func(x, theta_rls[0], 'Тета 2')
     draw_func(x, theta_rls[1], 'Тета 3')
     print (theta_rls[0])
     print (theta_rls[1])
+    
+    P = np.eye(2) * 0.03
+    ellipse = calc_ellipse_rmnk(P)
+    draw_func(ellipse[0, :], ellipse[1, :], 'rmnk1')
+
+    P = [[3.89353475*0.0000000001, -7.39021841*0.000000001], [-7.39021841*0.000000001, 1.27707087*0.000001]]
+    ellipse = calc_ellipse_rmnk(P)
+    draw_func(ellipse[0, :], ellipse[1, :], 'rmnk1000')
 
 if __name__ == '__main__':
     main()
